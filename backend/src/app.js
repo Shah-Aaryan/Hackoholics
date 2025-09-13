@@ -21,9 +21,12 @@ app.use(cookieParser())
 app.use("/api/ocr", ocrRoutes);
 
 //routes import 
-
+import energyRoutes from "./routes/energyRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 //routes declaration
+app.use("/api/energy", energyRoutes);
+app.use("/api/users", userRoutes);
 
 
 export default app;
