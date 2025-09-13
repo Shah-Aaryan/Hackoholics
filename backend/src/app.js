@@ -28,11 +28,13 @@ app.use("/api/marketplace", marketplaceRoutes);
 import energyRoutes from "./routes/energyRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import householdRoutes from "./routes/householdRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
 
 //routes declaration
 app.use("/api/energy", energyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/households", householdRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
 
 export default app;

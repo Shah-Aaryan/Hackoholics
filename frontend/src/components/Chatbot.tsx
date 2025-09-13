@@ -53,33 +53,58 @@ const Chatbot = ({ isOpen, onClose }: ChatbotProps) => {
     setMessages(prev => [...prev, newUserMessage]);
     setIsTyping(true);
 
-    // Simulate typing delay
-    setTimeout(() => {
-      // Find relevant response from mock data
-      const relevantResponse = mockChatData.find(chat => 
-        userMessage.toLowerCase().includes('reduce') ||
-        userMessage.toLowerCase().includes('save') ||
-        userMessage.toLowerCase().includes('energy')
-      ) || mockChatData.find(chat =>
-        userMessage.toLowerCase().includes('carbon') ||
-        userMessage.toLowerCase().includes('footprint')
-      ) || mockChatData.find(chat =>
-        userMessage.toLowerCase().includes('tree')
-      );
+    try {
+      // Call backend chatbot API
+      const response = await fetch('http://localhost:8000/api/chatbot/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          userId: '68c4f56fd13e6b30224f402c' // Default user ID for now
+        })
+      });
 
-      const botResponse = relevantResponse?.answer || 
-        "That's a great question! Based on your current usage patterns, I'd recommend focusing on peak-hour optimization and smart device usage. You're already doing well with 12% lower consumption than your neighbors! Would you like specific tips for your home?";
+      const data = await response.json();
 
+      if (data.success) {
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          question: '',
+          answer: data.data.aiResponse,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        // Fallback to mock response if API fails
+        const fallbackResponse = "I'm sorry, I'm having trouble processing your request right now. Please try again later.";
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          question: '',
+          answer: fallbackResponse,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+      }
+    } catch (error) {
+      console.error('Error calling chatbot API:', error);
+      
+      // Fallback to mock response
+      const fallbackResponse = "I'm sorry, I'm having trouble connecting to the server. Please try again later.";
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         question: '',
-        answer: botResponse,
+        answer: fallbackResponse,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -90,10 +115,12 @@ const Chatbot = ({ isOpen, onClose }: ChatbotProps) => {
   };
 
   const quickQuestions = [
-    "How can I reduce my energy bill?",
-    "What's my carbon footprint?",
-    "Why is my tree not growing?",
-    "Best energy-saving tips?"
+    "How can I reduce my energy consumption?",
+    "What is my carbon footprint?",
+    "How do I upload my electricity bill?",
+    "What are energy-saving tips?",
+    "How do I earn points?",
+    "What challenges are available?"
   ];
 
   return (
