@@ -13,7 +13,7 @@ import Community from "./pages/Community";
 import Bills from "./pages/Bills";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-
+import GreenMarketplace from "./pages/GreenMarketPlace";
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -69,7 +69,24 @@ const App = () => {
                 <Route path="/community" element={<Community />} />
                 <Route path="/bills" element={<Bills />} />
                 <Route path="/profile" element={<Profile />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+<Route
+    path="/marketplace"
+    element={
+      <GreenMarketplace
+        householdProfile={{
+          household_id: "household_123",
+          monthly_kwh: 350,
+          appliances: {
+            Refrigerator: 150,
+            "Washing Machine": 100,
+            "Air Conditioner": 100,
+          },
+        }}
+      />
+    }
+  />
+
+
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

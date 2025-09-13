@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { Plus, Calculator, TrendingUp, Receipt, Zap, Upload, FileImage } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Calculator, TrendingUp, Receipt, Zap, Upload, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockBills, Bill, EMISSION_FACTOR } from '@/data/mockData';
 import { toast } from '@/hooks/use-toast';
-import BillUpload from '@/components/BillUpload';
+import { uploadBillImage, calculateCarbonFootprint } from '@/api/apiClient';
 
 const Bills = () => {
   const [bills, setBills] = useState<Bill[]>(mockBills);
@@ -18,6 +18,16 @@ const Bills = () => {
     amount: '',
     date: ''
   });
+  
+  // OCR-related state
+  const [isUploading, setIsUploading] = useState(false);
+  const [ocrData, setOcrData] = useState<{
+    extractedText: string;
+    electricityUsage: number;
+    billingAmount: number;
+  } | null>(null);
+  const [showOcrPreview, setShowOcrPreview] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
     if (!newBill.units || !newBill.amount || !newBill.date) {
