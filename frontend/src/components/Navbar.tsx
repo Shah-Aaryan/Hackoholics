@@ -1,0 +1,132 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Sun, Moon, MessageCircle, Leaf } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+
+interface NavbarProps {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  toggleChatbot: () => void;
+}
+
+const Navbar = ({ isDarkMode, toggleDarkMode, toggleChatbot }: NavbarProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const navItems = [
+    { name: 'Dashboard', path: '/' },
+    { name: 'Energy Garden', path: '/garden' },
+    { name: 'Gamification', path: '/gamification' },
+    { name: 'Community', path: '/community' },
+    { name: 'Bills', path: '/bills' },
+    { name: 'Profile', path: '/profile' },
+  ];
+
+  const isActivePath = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  const NavLinks = ({ isMobile = false }) => (
+    <>
+      {navItems.map((item) => (
+        <Link
+          key={item.name}
+          to={item.path}
+          className={`
+            px-4 py-2 rounded-lg transition-all duration-200 font-medium
+            ${isActivePath(item.path)
+              ? 'bg-gradient-eco text-primary-foreground shadow-md'
+              : 'text-foreground hover:bg-muted hover:text-primary'
+            }
+            ${isMobile ? 'block text-center' : ''}
+          `}
+          onClick={() => isMobile && setIsOpen(false)}
+        >
+          {item.name}
+        </Link>
+      ))}
+    </>
+  );
+
+  return (
+    <>
+      <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="flex items-center justify-center w-10 h-10 bg-gradient-eco rounded-lg">
+                <Leaf className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                EcoTracker
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-2">
+              <NavLinks />
+            </div>
+
+            {/* Right side controls */}
+            <div className="flex items-center space-x-2">
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleDarkMode}
+                className="hover:bg-muted"
+              >
+                {isDarkMode ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </Button>
+
+              {/* Chatbot Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleChatbot}
+                className="hover:bg-muted relative"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse" />
+              </Button>
+
+              {/* Mobile Menu */}
+              <div className="md:hidden">
+                <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Menu className="w-5 h-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-64">
+                    <div className="flex flex-col space-y-4 mt-8">
+                      <NavLinks isMobile />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Floating Chatbot Button - Always visible */}
+      <Button
+        onClick={toggleChatbot}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-eco shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-[float_3s_ease-in-out_infinite]"
+      >
+        <MessageCircle className="w-6 h-6 text-white" />
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full animate-pulse" />
+      </Button>
+    </>
+  );
+};
+
+export default Navbar;
