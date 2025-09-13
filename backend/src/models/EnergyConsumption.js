@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
-import User from "./User.js";
 
 const energyConsumptionSchema = new mongoose.Schema({
+  household_id: {
+    type: String,
+    required: true,
+    trim: true
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -38,7 +42,8 @@ const energyConsumptionSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for efficient querying by user and timestamp
+// Index for efficient querying by household, user and timestamp
+energyConsumptionSchema.index({ household_id: 1, timestamp: -1 });
 energyConsumptionSchema.index({ userId: 1, timestamp: -1 });
 
 export const EnergyConsumption = mongoose.model("EnergyConsumption", energyConsumptionSchema);

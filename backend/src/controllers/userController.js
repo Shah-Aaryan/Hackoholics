@@ -8,7 +8,7 @@ import Household from "../models/Household.js";
  */
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password, role = "resident", householdId } = req.body;
+    const { name, email, password, role = "resident", household_id } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -32,7 +32,7 @@ export const createUser = async (req, res) => {
       email,
       password, // In MVP, storing plain text. In production, hash this!
       role,
-      householdId
+      household_id
     });
 
     await user.save();
@@ -46,6 +46,7 @@ export const createUser = async (req, res) => {
         email: user.email,
         role: user.role,
         points: user.points,
+        household_id: user.household_id,
         createdAt: user.createdAt
       }
     });
@@ -70,8 +71,7 @@ export const getUserById = async (req, res) => {
     const { userId } = req.params;
 
     const user = await User.findById(userId)
-      .populate('householdId', 'name address')
-      .populate('achievements', 'name description points icon');
+      .populate('household_id', 'household_id type size income_level location address');
 
     if (!user) {
       return res.status(404).json({
@@ -106,7 +106,7 @@ export const getAllUsers = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const users = await User.find()
-      .populate('householdId', 'name address')
+      .populate('household_id', 'household_id type size income_level location address')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });
@@ -211,7 +211,7 @@ export const loginUser = async (req, res) => {
     }
 
     const user = await User.findOne({ email, password })
-      .populate('householdId', 'name address');
+      .populate('household_id', 'household_id type size income_level location address');
 
     if (!user) {
       return res.status(401).json({
@@ -229,7 +229,7 @@ export const loginUser = async (req, res) => {
         email: user.email,
         role: user.role,
         points: user.points,
-        householdId: user.householdId
+        household_id: user.household_id
       }
     });
 

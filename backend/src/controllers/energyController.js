@@ -37,6 +37,7 @@ export const getRealTimeEnergyData = async (req, res) => {
 
     // Save to database
     const energyRecord = new EnergyConsumption({
+      household_id: "1", // Default household for now
       userId,
       timestamp: mockEnergyData.timestamp,
       energyConsumption: mockEnergyData.energyConsumption,

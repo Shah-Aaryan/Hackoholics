@@ -23,10 +23,12 @@ app.use("/api/ocr", ocrRoutes);
 //routes import 
 import energyRoutes from "./routes/energyRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import householdRoutes from "./routes/householdRoutes.js";
 
 //routes declaration
 app.use("/api/energy", energyRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/households", householdRoutes);
 
 
 export default app;

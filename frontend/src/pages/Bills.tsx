@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Plus, Calculator, TrendingUp, Receipt, Zap } from 'lucide-react';
+import { Plus, Calculator, TrendingUp, Receipt, Zap, Upload, FileImage } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockBills, Bill, EMISSION_FACTOR } from '@/data/mockData';
 import { toast } from '@/hooks/use-toast';
+import BillUpload from '@/components/BillUpload';
 
 const Bills = () => {
   const [bills, setBills] = useState<Bill[]>(mockBills);
@@ -49,6 +51,19 @@ const Bills = () => {
     });
   };
 
+  const handleBillProcessed = (billData: any) => {
+    // Convert OCR processed data to Bill format
+    const processedBill: Bill = {
+      id: Date.now().toString(),
+      date: new Date().toISOString().split('T')[0], // Today's date
+      units: billData.electricityUsage,
+      amount: billData.extractedData?.billingDetails?.totalAmount || 0,
+      carbonFootprint: billData.carbonFootprintKg
+    };
+
+    setBills(prev => [processedBill, ...prev]);
+  };
+
   const totalUnits = bills.reduce((sum, bill) => sum + bill.units, 0);
   const totalAmount = bills.reduce((sum, bill) => sum + bill.amount, 0);
   const totalCarbon = bills.reduce((sum, bill) => sum + bill.carbonFootprint, 0);
@@ -69,73 +84,90 @@ const Bills = () => {
             Track your electricity bills and carbon footprint
           </p>
         </div>
-        
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="btn-eco">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Bill
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Electricity Bill</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="units">Units Consumed (kWh)</Label>
-                <Input
-                  id="units"
-                  type="number"
-                  placeholder="420"
-                  value={newBill.units}
-                  onChange={(e) => setNewBill({ ...newBill, units: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="amount">Amount ($)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="89.50"
-                  value={newBill.amount}
-                  onChange={(e) => setNewBill({ ...newBill, amount: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="date">Bill Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={newBill.date}
-                  onChange={(e) => setNewBill({ ...newBill, date: e.target.value })}
-                />
-              </div>
-              
-              {/* Live Carbon Calculator */}
-              {newBill.units && (
-                <div className="bg-gradient-to-r from-success/10 to-primary/10 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Calculator className="w-4 h-4" />
-                    Carbon Footprint Preview
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {parseFloat(newBill.units)} kWh × {EMISSION_FACTOR} kg CO₂/kWh
-                  </p>
-                  <div className="text-2xl font-bold text-success">
-                    {calculateCarbonFootprint(parseFloat(newBill.units)).toFixed(1)} kg CO₂
-                  </div>
-                </div>
-              )}
-              
-              <Button onClick={handleSubmit} className="w-full btn-eco">
-                Add Bill & Calculate Impact
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
+
+      {/* Tabs for different bill entry methods */}
+      <Tabs defaultValue="upload" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="upload" className="flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Upload Bill Image
+          </TabsTrigger>
+          <TabsTrigger value="manual" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Manual Entry
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="upload" className="space-y-6">
+          <BillUpload onBillProcessed={handleBillProcessed} />
+        </TabsContent>
+
+        <TabsContent value="manual" className="space-y-6">
+          <Card className="card-eco">
+            <CardHeader>
+              <CardTitle>Manual Bill Entry</CardTitle>
+              <CardDescription>
+                Enter your electricity bill details manually
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="units">Units Consumed (kWh)</Label>
+                  <Input
+                    id="units"
+                    type="number"
+                    placeholder="420"
+                    value={newBill.units}
+                    onChange={(e) => setNewBill({ ...newBill, units: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount ($)</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    placeholder="89.50"
+                    value={newBill.amount}
+                    onChange={(e) => setNewBill({ ...newBill, amount: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="date">Bill Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={newBill.date}
+                    onChange={(e) => setNewBill({ ...newBill, date: e.target.value })}
+                  />
+                </div>
+                
+                {/* Live Carbon Calculator */}
+                {newBill.units && (
+                  <div className="bg-gradient-to-r from-success/10 to-primary/10 rounded-lg p-4">
+                    <h4 className="font-semibold mb-2 flex items-center gap-2">
+                      <Calculator className="w-4 h-4" />
+                      Carbon Footprint Preview
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {parseFloat(newBill.units)} kWh × {EMISSION_FACTOR} kg CO₂/kWh
+                    </p>
+                    <div className="text-2xl font-bold text-success">
+                      {calculateCarbonFootprint(parseFloat(newBill.units)).toFixed(1)} kg CO₂
+                    </div>
+                  </div>
+                )}
+                
+                <Button onClick={handleSubmit} className="w-full btn-eco">
+                  Add Bill & Calculate Impact
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
