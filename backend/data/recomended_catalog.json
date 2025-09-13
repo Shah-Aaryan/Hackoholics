@@ -1,0 +1,102 @@
+{
+  "1": {
+    "title": "Upgrade to LED bulbs",
+    "description": "Replace incandescent bulbs with LED bulbs",
+    "category": "lighting",
+    "potential_savings": 0.75,
+    "cost": "low",
+    "difficulty": "easy",
+    "seasonal_relevance": ["all"],
+    "household_type": ["all"]
+  },
+  "2": {
+    "title": "Install programmable thermostat",
+    "description": "Use smart thermostat to optimize heating/cooling",
+    "category": "hvac",
+    "potential_savings": 0.1,
+    "cost": "medium",
+    "difficulty": "medium",
+    "seasonal_relevance": ["winter", "summer"],
+    "household_type": ["house", "apartment"]
+  },
+  "3": {
+    "title": "Improve insulation",
+    "description": "Add insulation to walls, attic, and basement",
+    "category": "insulation",
+    "potential_savings": 0.15,
+    "cost": "high",
+    "difficulty": "hard",
+    "seasonal_relevance": ["winter"],
+    "household_type": ["house"]
+  },
+  "4": {
+    "title": "Seal air leaks",
+    "description": "Caulk and weatherstrip doors and windows",
+    "category": "insulation",
+    "potential_savings": 0.05,
+    "cost": "low",
+    "difficulty": "easy",
+    "seasonal_relevance": ["winter", "summer"],
+    "household_type": ["all"]
+  },
+  "5": {
+    "title": "Use cold water for washing",
+    "description": "Wash clothes in cold water when possible",
+    "category": "appliances",
+    "potential_savings": 0.12,
+    "cost": "free",
+    "difficulty": "easy",
+    "seasonal_relevance": ["all"],
+    "household_type": ["all"]
+  },
+  "6": {
+    "title": "Install ceiling fans",
+    "description": "Use ceiling fans to circulate air and reduce AC usage",
+    "category": "cooling",
+    "potential_savings": 0.08,
+    "cost": "medium",
+    "difficulty": "medium",
+    "seasonal_relevance": ["summer"],
+    "household_type": ["house", "apartment"]
+  },
+  "7": {
+    "title": "Unplug phantom loads",
+    "description": "Unplug devices when not in use to eliminate standby power",
+    "category": "electronics",
+    "potential_savings": 0.03,
+    "cost": "free",
+    "difficulty": "easy",
+    "seasonal_relevance": ["all"],
+    "household_type": ["all"]
+  },
+  "8": {
+    "title": "Upgrade to ENERGY STAR appliances",
+    "description": "Replace old appliances with energy-efficient models",
+    "category": "appliances",
+    "potential_savings": 0.2,
+    "cost": "high",
+    "difficulty": "medium",
+    "seasonal_relevance": ["all"],
+    "household_type": ["all"]
+  },
+  "9": {
+    "title": "Install window treatments",
+    "description": "Use blinds or curtains to control heat gain/loss",
+    "category": "thermal",
+    "potential_savings": 0.06,
+    "cost": "medium",
+    "difficulty": "easy",
+    "seasonal_relevance": ["winter", "summer"],
+    "household_type": ["all"]
+  },
+  "10": {
+    "title": "Maintain HVAC system",
+    "description": "Regular maintenance and filter changes",
+    "category": "hvac",
+    "potential_savings": 0.08,
+    "cost": "low",
+    "difficulty": "easy",
+    "seasonal_relevance": ["all"],
+    "household_type": ["house", "apartment"]
+  }
+}
