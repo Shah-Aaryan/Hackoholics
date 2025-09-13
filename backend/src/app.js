@@ -18,9 +18,12 @@ app.use(express.static("public")) //all static files are in public folder
 app.use(cookieParser())
 
 //routes import 
-
+import energyRoutes from "./routes/energyRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 //routes declaration
+app.use("/api/energy", energyRoutes);
+app.use("/api/users", userRoutes);
 
 
 export default app;
