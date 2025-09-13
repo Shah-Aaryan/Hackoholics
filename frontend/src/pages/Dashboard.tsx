@@ -1,20 +1,34 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw, Lightbulb, TrendingDown, Users, Zap, Leaf } from 'lucide-react';
+import { RefreshCw, Lightbulb, TrendingDown, Users, Zap, Leaf, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import TreeVisualization from '@/components/TreeVisualization';
-import HeatMap from '@/components/HeatMap'; // New heatmap component
+import HeatMap from '@/components/HeatMap';
 import { mockEnergyData, getAIRecommendations, EnergyData } from '@/data/mockData';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [energyData, setEnergyData] = useState<EnergyData>(mockEnergyData);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+
+  // User is guaranteed to be authenticated due to ProtectedRoute
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    toast({
+      title: "Logged out successfully",
+      description: "You have been logged out of your account.",
+    });
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -38,7 +52,7 @@ const Dashboard = () => {
     }, 2000);
   };
 
-  const recommendations = getAIRecommendations(energyData, 'summer'); // season param removed from UI
+  const recommendations = getAIRecommendations(energyData, 'summer');
    const weeklyData: number[][] = Array.from({ length: 7 }, () =>
     Array.from({ length: 24 }, () => Math.floor(Math.random() * 10))
   );
@@ -70,28 +84,45 @@ const Dashboard = () => {
 
   const chartData = getChartData();
 
+  // User is guaranteed to be authenticated due to ProtectedRoute
+
   return (
     <div className="container mx-auto p-6 space-y-6 font-sans">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Energy Dashboard
-          </h1>
-          <p className="text-base text-muted-foreground mt-1">
-            Track your energy usage and environmental impact
-          </p>
+  {/* Welcome Header */}
+  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-6 border border-green-200 dark:border-gray-700">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-green-500 bg-clip-text text-transparent">
+          Welcome back!
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+          Track your energy usage and environmental impact for <strong>{user.householdName}</strong>
+        </p>
+        <div className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <User className="w-4 h-4 mr-1" />
+          {user.email}
         </div>
-        <div className="flex items-center gap-2 mt-2 sm:mt-0">
-          <Button onClick={handleRefresh} disabled={isRefreshing} className="btn-eco">
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh Data
-          </Button>
-          <Button onClick={() => navigate("/marketplace")} className="btn-eco">
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white"
+        >
+          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Refresh Data
+        </Button>
+        <div className="flex flex-wrap gap-4">
+          <Button
+            onClick={() => navigate("/marketplace")}
+            className="bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-500 dark:to-green-600 hover:from-green-700 hover:to-emerald-700 text-white"
+          >
             🌱 Explore Green Marketplace
           </Button>
         </div>
       </div>
+    </div>
+  </div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
