@@ -68,7 +68,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode, toggleChatbot }: NavbarProps) => {
                 <Leaf className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                EcoTracker
+                EcoConnect
               </span>
             </Link>
 

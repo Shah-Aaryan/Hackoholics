@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { MapPin, MessageSquare, TrendingUp, Users, Send, Heart, Share } from 'lucide-react';
+import { MapPin, MessageSquare, TrendingUp, Users, Send, Heart, Share, Coins, Vote, Gift, Zap, TreePine, Recycle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 // Simple visualizations without recharts
 import { toast } from '@/hooks/use-toast';
 
@@ -16,6 +17,28 @@ interface Post {
   timestamp: Date;
   likes: number;
   category: 'tip' | 'achievement' | 'question';
+}
+
+interface EcoCoinGoal {
+  id: string;
+  title: string;
+  description: string;
+  cost: number;
+  progress: number;
+  target: number;
+  category: 'solar' | 'composting' | 'green-space' | 'education';
+  votes: number;
+  userVoted: boolean;
+}
+
+interface CommunityPerk {
+  id: string;
+  title: string;
+  description: string;
+  cost: number;
+  unlocked: boolean;
+  icon: string;
+  category: 'infrastructure' | 'education' | 'environment';
 }
 
 const Community = () => {
@@ -50,6 +73,84 @@ const Community = () => {
   ]);
 
   const [newPost, setNewPost] = useState('');
+
+  // EcoCoins System Data
+  const [userEcoCoins, setUserEcoCoins] = useState(1250);
+  const [communityEcoCoins, setCommunityEcoCoins] = useState(45680);
+  const [ecoCoinGoals, setEcoCoinGoals] = useState<EcoCoinGoal[]>([
+    {
+      id: '1',
+      title: 'Solar Streetlights',
+      description: 'Install solar-powered LED streetlights on Main Street',
+      cost: 5000,
+      progress: 3200,
+      target: 5000,
+      category: 'solar',
+      votes: 45,
+      userVoted: false
+    },
+    {
+      id: '2',
+      title: 'Community Composting Hub',
+      description: 'Build a neighborhood composting facility for organic waste',
+      cost: 3000,
+      progress: 1800,
+      target: 3000,
+      category: 'composting',
+      votes: 32,
+      userVoted: true
+    },
+    {
+      id: '3',
+      title: 'Green Learning Center',
+      description: 'Create an educational space for sustainability workshops',
+      cost: 4000,
+      progress: 1200,
+      target: 4000,
+      category: 'education',
+      votes: 28,
+      userVoted: false
+    }
+  ]);
+
+  const [communityPerks, setCommunityPerks] = useState<CommunityPerk[]>([
+    {
+      id: '1',
+      title: 'Solar Streetlights',
+      description: 'Energy-efficient LED streetlights powered by solar panels',
+      cost: 5000,
+      unlocked: false,
+      icon: '💡',
+      category: 'infrastructure'
+    },
+    {
+      id: '2',
+      title: 'Community Garden',
+      description: 'Shared space for growing organic vegetables and herbs',
+      cost: 2500,
+      unlocked: true,
+      icon: '🌱',
+      category: 'environment'
+    },
+    {
+      id: '3',
+      title: 'Energy Workshop Series',
+      description: 'Monthly workshops on energy conservation and renewable energy',
+      cost: 1500,
+      unlocked: true,
+      icon: '📚',
+      category: 'education'
+    },
+    {
+      id: '4',
+      title: 'Composting Facility',
+      description: 'Community composting hub for organic waste management',
+      cost: 3000,
+      unlocked: false,
+      icon: '♻️',
+      category: 'environment'
+    }
+  ]);
 
   // Mock neighborhood data
   const neighborhoodData = [
@@ -117,6 +218,39 @@ const Community = () => {
     ));
   };
 
+  const handleVoteGoal = (goalId: string) => {
+    setEcoCoinGoals(prev => prev.map(goal => 
+      goal.id === goalId 
+        ? { 
+            ...goal, 
+            votes: goal.userVoted ? goal.votes - 1 : goal.votes + 1,
+            userVoted: !goal.userVoted,
+            progress: goal.userVoted ? goal.progress - 50 : goal.progress + 50
+          }
+        : goal
+    ));
+    
+    toast({
+      title: "Vote Cast!",
+      description: "Your EcoCoins have been contributed to this community goal.",
+    });
+  };
+
+  const handleUnlockPerk = (perkId: string) => {
+    const perk = communityPerks.find(p => p.id === perkId);
+    if (perk && communityEcoCoins >= perk.cost) {
+      setCommunityPerks(prev => prev.map(p => 
+        p.id === perkId ? { ...p, unlocked: true } : p
+      ));
+      setCommunityEcoCoins(prev => prev - perk.cost);
+      
+      toast({
+        title: "Perk Unlocked!",
+        description: `${perk.title} is now available for the community!`,
+      });
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'tip': return '💡';
@@ -138,13 +272,54 @@ const Community = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           Community Hub
         </h1>
         <p className="text-muted-foreground">
           Connect with neighbors and share energy-saving tips
         </p>
+        
+        {/* EcoCoins System */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+          <Card className="card-eco bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                    <Coins className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-yellow-800">Your EcoCoins</h3>
+                    <p className="text-2xl font-bold text-yellow-700">{userEcoCoins.toLocaleString()}</p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                  Earned: {Math.floor(userEcoCoins / 10)} kWh saved
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="card-eco bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                    <Users className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-green-800">Community Pool</h3>
+                    <p className="text-2xl font-bold text-green-700">{communityEcoCoins.toLocaleString()}</p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  Available for goals
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Community Stats */}
@@ -190,6 +365,117 @@ const Community = () => {
           <CardContent>
             <div className="text-2xl font-bold text-warning">156</div>
             <p className="text-xs text-muted-foreground">This week</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* EcoCoins Voting & Perks Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Community Goals Voting */}
+        <Card className="card-eco">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Vote className="w-5 h-5 text-primary" />
+              Community Goals
+              <Badge variant="secondary" className="ml-auto">Vote with EcoCoins</Badge>
+            </CardTitle>
+            <CardDescription>Help decide which community projects to fund</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {ecoCoinGoals.map((goal) => (
+                <div key={goal.id} className="card-hero p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm">{goal.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{goal.description}</p>
+                    </div>
+                    <Badge 
+                      variant={goal.category === 'solar' ? 'default' : goal.category === 'composting' ? 'secondary' : 'outline'}
+                      className="ml-2"
+                    >
+                      {goal.category === 'solar' && <Zap className="w-3 h-3 mr-1" />}
+                      {goal.category === 'composting' && <Recycle className="w-3 h-3 mr-1" />}
+                      {goal.category === 'education' && <TreePine className="w-3 h-3 mr-1" />}
+                      {goal.category}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span>{goal.progress.toLocaleString()} / {goal.target.toLocaleString()} EcoCoins</span>
+                      <span>{goal.votes} votes</span>
+                    </div>
+                    <Progress value={(goal.progress / goal.target) * 100} className="h-2" />
+                  </div>
+                  
+                  <Button
+                    size="sm"
+                    variant={goal.userVoted ? "default" : "outline"}
+                    onClick={() => handleVoteGoal(goal.id)}
+                    className={`w-full ${goal.userVoted ? 'btn-eco' : ''}`}
+                    disabled={goal.progress >= goal.target}
+                  >
+                    <Vote className="w-4 h-4 mr-2" />
+                    {goal.userVoted ? 'Voted (50 EcoCoins)' : 'Vote (50 EcoCoins)'}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Community Perks */}
+        <Card className="card-eco">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gift className="w-5 h-5 text-primary" />
+              Community Perks
+              <Badge variant="secondary" className="ml-auto">Unlock with EcoCoins</Badge>
+            </CardTitle>
+            <CardDescription>Unlock community-level benefits and infrastructure</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {communityPerks.map((perk) => (
+                <div key={perk.id} className={`card-hero p-4 space-y-3 ${perk.unlocked ? 'bg-green-50 border-green-200' : ''}`}>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl">{perk.icon}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm">{perk.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{perk.description}</p>
+                      </div>
+                    </div>
+                    <Badge 
+                      variant={perk.unlocked ? 'default' : 'secondary'}
+                      className={perk.unlocked ? 'bg-green-100 text-green-800' : ''}
+                    >
+                      {perk.unlocked ? 'Unlocked' : `${perk.cost.toLocaleString()} EcoCoins`}
+                    </Badge>
+                  </div>
+                  
+                  {!perk.unlocked && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleUnlockPerk(perk.id)}
+                      className="w-full"
+                      disabled={communityEcoCoins < perk.cost}
+                    >
+                      <Gift className="w-4 h-4 mr-2" />
+                      {communityEcoCoins >= perk.cost ? 'Unlock Perk' : 'Insufficient Funds'}
+                    </Button>
+                  )}
+                  
+                  {perk.unlocked && (
+                    <div className="text-center p-2 bg-green-100 rounded-lg">
+                      <p className="text-sm font-medium text-green-800">✅ Available for Community Use</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>

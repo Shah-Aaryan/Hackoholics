@@ -76,16 +76,28 @@ Respond as a helpful energy management assistant:`;
 function getFallbackResponse(userMessage) {
   const message = userMessage.toLowerCase();
   
-  if (message.includes('energy') || message.includes('save') || message.includes('reduce')) {
+  // Water saving questions
+  if (message.includes('water') || message.includes('save water') || message.includes('water saving')) {
     return {
       success: true,
-      message: "Great question! To reduce your energy consumption, try these tips: 1) Use LED bulbs instead of incandescent ones, 2) Set your thermostat 2-3°C higher in summer, 3) Unplug devices when not in use, 4) Use natural light during the day. These small changes can make a big difference!",
+      message: "Great question about water conservation! Here are some effective water-saving tips: 1) Fix leaky faucets and pipes immediately, 2) Take shorter showers (5-10 minutes), 3) Use a low-flow showerhead, 4) Turn off the tap while brushing teeth, 5) Run dishwashers and washing machines only with full loads, 6) Water plants in the early morning or evening. These simple changes can save hundreds of gallons per month!",
       timestamp: new Date().toISOString(),
       model: "fallback"
     };
   }
   
-  if (message.includes('carbon') || message.includes('footprint')) {
+  // Energy saving questions
+  if (message.includes('energy') || message.includes('save energy') || message.includes('reduce energy')) {
+    return {
+      success: true,
+      message: "Great question! To reduce your energy consumption, try these tips: 1) Use LED bulbs instead of incandescent ones, 2) Set your thermostat 2-3°C higher in summer, 3) Unplug devices when not in use, 4) Use natural light during the day, 5) Seal windows and doors to prevent drafts, 6) Use energy-efficient appliances. These small changes can make a big difference!",
+      timestamp: new Date().toISOString(),
+      model: "fallback"
+    };
+  }
+  
+  // Carbon footprint questions
+  if (message.includes('carbon') || message.includes('footprint') || message.includes('co2')) {
     return {
       success: true,
       message: "Your carbon footprint is calculated based on your energy consumption and the carbon intensity of your region. The app tracks your electricity usage and multiplies it by the local carbon intensity factor to give you an accurate measurement. Reducing energy use directly reduces your carbon footprint!",
@@ -94,6 +106,7 @@ function getFallbackResponse(userMessage) {
     };
   }
   
+  // Bill upload questions
   if (message.includes('bill') || message.includes('upload') || message.includes('ocr')) {
     return {
       success: true,
@@ -103,7 +116,8 @@ function getFallbackResponse(userMessage) {
     };
   }
   
-  if (message.includes('points') || message.includes('earn') || message.includes('gamification')) {
+  // Gamification questions
+  if (message.includes('points') || message.includes('earn') || message.includes('gamification') || message.includes('challenges')) {
     return {
       success: true,
       message: "You can earn points by reducing your energy consumption, participating in challenges, and following energy-saving recommendations. Points unlock achievements and help you climb the leaderboard. Check the Gamification page to see available challenges!",
@@ -112,10 +126,20 @@ function getFallbackResponse(userMessage) {
     };
   }
   
+  // Sustainability general questions
+  if (message.includes('sustainable') || message.includes('green') || message.includes('eco') || message.includes('environment')) {
+    return {
+      success: true,
+      message: "Sustainability is all about making choices that protect our planet! Focus on: 1) Reducing energy and water consumption, 2) Using renewable resources, 3) Minimizing waste, 4) Choosing eco-friendly products, 5) Supporting renewable energy. Every small action counts towards a greener future!",
+      timestamp: new Date().toISOString(),
+      model: "fallback"
+    };
+  }
+  
   // Default response
   return {
     success: true,
-    message: "I'm here to help you with energy management and sustainability! You can ask me about reducing energy consumption, understanding your carbon footprint, uploading bills, earning points, or any other features of the app. What would you like to know?",
+    message: "I'm here to help you with energy management and sustainability! You can ask me about reducing energy consumption, saving water, understanding your carbon footprint, uploading bills, earning points, or any other features of the app. What would you like to know?",
     timestamp: new Date().toISOString(),
     model: "fallback"
   };

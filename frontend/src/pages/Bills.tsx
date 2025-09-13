@@ -6,9 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockBills, Bill, EMISSION_FACTOR } from '@/data/mockData';
 import { toast } from '@/hooks/use-toast';
 import { uploadBillImage, calculateCarbonFootprint } from '@/api/apiClient';
+import BillUpload from '@/components/BillUpload';
 
 const Bills = () => {
   const [bills, setBills] = useState<Bill[]>(mockBills);

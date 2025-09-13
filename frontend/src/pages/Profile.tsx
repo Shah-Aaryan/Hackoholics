@@ -287,29 +287,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Utility Connection */}
-          <Card className="card-eco">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Link2 className="w-5 h-5" />
-                Utility Connection
-              </CardTitle>
-              <CardDescription>
-                Connect your utility account for automatic data import
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Link your utility account to automatically import your energy usage data and get more accurate insights.
-                </p>
-                <Button onClick={handleUtilityConnection} className="btn-eco">
-                  <Link2 className="w-4 h-4 mr-2" />
-                  Connect Utility Account
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          
 
           {/* Achievements Grid */}
           <Card className="card-eco">
