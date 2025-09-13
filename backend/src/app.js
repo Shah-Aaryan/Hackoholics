@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser"
+import ocrRoutes from "./routes/ocr.route.js";
 
 const app=express();
 
@@ -16,6 +17,8 @@ app.use(express.urlencoded({extended:true,limit:"16kb"})) //to handle data that 
 app.use(express.static("public")) //all static files are in public folder
 
 app.use(cookieParser())
+
+app.use("/api/ocr", ocrRoutes);
 
 //routes import 
 
